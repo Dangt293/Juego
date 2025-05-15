@@ -52,6 +52,8 @@ function create() {
 
     this.player.setCollideWorldBounds(true);
     this.shots = this.physics.add.group();
+    this.canShoot = true;
+    this.shootCooldown = 175 ;
 
     //Refiere al sprite de la partícula radioactiva
     this.anims.create({
@@ -102,10 +104,17 @@ function update(time, delta) {
     };
 
     //PARA DISPARAR
-    if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+    if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.canShoot ) {
     let shot = this.shots.create(this.player.x , this.player.y, "Neutron");
     shot.setVelocityY(-600); // velocidad hacia la derecha
     shot.setCollideWorldBounds(false);
     shot.body.allowGravity = false;
+
+    this.canShoot = false
+
+    this.time.delayedCall(this.shootCooldown, () => {
+        this.canShoot = true;
+    });
+
     }
 }
