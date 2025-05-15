@@ -1,3 +1,4 @@
+
 const config = {
     width: 1000,
     height: 700,
@@ -12,10 +13,9 @@ const config = {
         default: "arcade",
         arcade: {
             gravity: {
-                
+
             }
         }
-
     }
 }
 
@@ -26,28 +26,31 @@ function preload() {
     this.load.spritesheet("atomo", "assets/AtomoJuego19.png", {
         frameWidth: 96,
         frameHeight: 96
-    })
+    });
 
     //Carga el sprite de la partícula radioactiva
     this.load.spritesheet("RadioactivePart", "assets/Radioactive.png", {
         frameWidth: 96,
         frameHeight: 96
-    })
+    });
+
+    //Carga el sprite del neutron (disparo)
+    this.load.image("Neutron" , "assets/Neutron_Nuevo.png");
 }
 
 function create() {
+
     //Refiere al sprite del átomo
     this.anims.create({
         key: "move",
         frames: this.anims.generateFrameNumbers("atomo", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] }),
         frameRate: 19,
         repeat: -1
-    })
-    this.player = this.add.sprite(200, 350, "atomo");
-    
+    });
+    this.player = this.physics.add.sprite(200, 350, "atomo");
     this.player.play("move", true);
 
-    
+    this.shots = this.physics.add.group();
 
     //Refiere al sprite de la partícula radioactiva
     this.anims.create({
@@ -55,7 +58,7 @@ function create() {
         frames: this.anims.generateFrameNumbers("RadioactivePart", { frames: [0, 1, 2, 3, 4, 5, 6, 7] }),
         frameRate: 9,
         repeat: -1
-    })
+    });
 
     let grupo = this.add.group({
         key: 'RadioactivePart',
@@ -65,31 +68,37 @@ function create() {
             y: 300,
             stepX: 100
         }
-    })
+    });
     grupo.playAnimation("rotate")
 
-    this.tweens.add ({
+    this.tweens.add({
         targets: grupo.getChildren(),
         duration: 1000,
         x: (target) => target.x + 50,
         repeat: -1,
         yoyo: true
-    })
+    });
 
-<<<<<<< HEAD
-    this.player = this.physics.add.sprite(200, 350 , "atomo");
+    this.cursors = this.input.keyboard.addKeys({
+        left: Phaser.Input.Keyboard.KeyCodes.A,
+        right: Phaser.Input.Keyboard.KeyCodes.D
+    });
 
-    this.input.keyboard.on("keydown_D" , () => {
-        this.atomo.x++;
-    })
-    this.input.keyboard.on("keydown_A" , () => {
-        this.atomo.x--;
-    })
-=======
-   
->>>>>>> 5fa4f43c193add9f56b84280faad4dd3b4a9c89c
+    this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
 
 function update(time, delta) {
-    
+    if (this.cursors.left.isDown) {
+        this.player.x -= 6;
+    } else if (this.cursors.right.isDown) {
+        this.player.x += 6;
+    };
+
+    //PARA DISPARAR
+    if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+    let shot = this.shots.create(this.player.x , this.player.y, "Neutron");
+    shot.setVelocityY(-600); // velocidad hacia la derecha
+    shot.setCollideWorldBounds(false);
+    shot.body.allowGravity = false;
+    }
 }
