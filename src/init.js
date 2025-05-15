@@ -47,9 +47,10 @@ function create() {
         frameRate: 19,
         repeat: -1
     });
-    this.player = this.physics.add.sprite(200, 350, "atomo");
+    this.player = this.physics.add.sprite(400, 650, "atomo");
     this.player.play("move", true);
 
+    this.player.setCollideWorldBounds(true);
     this.shots = this.physics.add.group();
 
     //Refiere al sprite de la partícula radioactiva
@@ -60,23 +61,29 @@ function create() {
         repeat: -1
     });
 
-    let grupo = this.add.group({
+    let grupo = this.physics.add.group({
         key: 'RadioactivePart',
-        repeat: 8,
+        repeat: 9,
         setXY: {
-            x: 40,
+            x: 50,
             y: 300,
-            stepX: 100
+            stepX: 97
         }
+        
     });
     grupo.playAnimation("rotate")
 
     this.tweens.add({
         targets: grupo.getChildren(),
         duration: 1000,
-        x: (target) => target.x + 50,
+        x: (target) => target.x + 25,
         repeat: -1,
         yoyo: true
+    });
+
+    grupo.children.iterate((enemy) => {
+    enemy.setCollideWorldBounds(true);
+    enemy.setBounce(1);
     });
 
     this.cursors = this.input.keyboard.addKeys({
