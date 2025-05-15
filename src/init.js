@@ -37,6 +37,8 @@ function create() {
     this.player = this.add.sprite(200, 350, "atomo")
     this.player.play("move", true)
 
+    
+
     //Refiere al sprite de la partícula radioactiva
     this.anims.create({
         key: "walk",
@@ -44,10 +46,33 @@ function create() {
         frameRate: 9,
         repeat: -1
     })
-    this.enemy = this.add.sprite(400, 300, "RadioactivePart")
+    this.enemy = this.add.sprite(40, 300, "RadioactivePart")
     this.enemy.play("walk", true)
+
+    let grupo = this.add.group({
+        key: 'RadioactivePart',
+        setXY: {
+            x: 40,
+            y: 300
+        }
+    })
+
+    this.tweens.add ({
+        targets: this.group,
+        duration: 1000,
+        x: this.enemy.x + 100,
+        repeat: -1,
+        yoyo: true
+    })
+
+    this.right = this.input.keyboard.AddKey(Phaser.Input.Keyboard.KeyCodes.D)
+    this.left = this.input.keyboard.AddKey(Phaser.Input.Keyboard.KeyCodes.A)
 }
 
 function update(time, delta) {
-
+    if(this.right.isDown){
+        this.atomo.x++;
+    } else if ( this.left.isDown){
+        this.atomo.x--;
+    }
 }
