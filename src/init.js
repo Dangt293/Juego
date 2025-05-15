@@ -7,6 +7,15 @@ const config = {
         preload: preload,
         create: create,
         update: update
+    },
+    physics: {
+        default: "arcade",
+        arcade: {
+            gravity: {
+                
+            }
+        }
+
     }
 }
 
@@ -34,8 +43,9 @@ function create() {
         frameRate: 19,
         repeat: -1
     })
-    this.player = this.add.sprite(200, 350, "atomo")
-    this.player.play("move", true)
+    this.player = this.add.sprite(200, 350, "atomo");
+    
+    this.player.play("move", true);
 
     
 
@@ -65,8 +75,14 @@ function create() {
         yoyo: true
     })
 
-    this.right = this.input.keyboard.AddKey(Phaser.Input.Keyboard.KeyCodes.D)
-    this.left = this.input.keyboard.AddKey(Phaser.Input.Keyboard.KeyCodes.A)
+    this.player = this.physics.add.sprite(200, 350 , "atomo");
+
+    this.input.keyboard.on("keydown_D" , () => {
+        this.atomo.x++;
+    })
+    this.input.keyboard.on("keydown_A" , () => {
+        this.atomo.x--;
+    })
 }
 
 function update(time, delta) {
