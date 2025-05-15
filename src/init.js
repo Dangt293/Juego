@@ -1,6 +1,6 @@
 const config = {
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 700,
     parent: "container",
     type: Phaser.AUTO,
     scene: {
@@ -51,30 +51,32 @@ function create() {
 
     //Refiere al sprite de la partícula radioactiva
     this.anims.create({
-        key: "walk",
+        key: "rotate",
         frames: this.anims.generateFrameNumbers("RadioactivePart", { frames: [0, 1, 2, 3, 4, 5, 6, 7] }),
         frameRate: 9,
         repeat: -1
     })
-    this.enemy = this.add.sprite(40, 300, "RadioactivePart")
-    this.enemy.play("walk", true)
 
     let grupo = this.add.group({
         key: 'RadioactivePart',
+        repeat: 8,
         setXY: {
             x: 40,
-            y: 300
+            y: 300,
+            stepX: 100
         }
     })
+    grupo.playAnimation("rotate")
 
     this.tweens.add ({
-        targets: this.group,
+        targets: grupo.getChildren(),
         duration: 1000,
-        x: this.enemy.x + 100,
+        x: (target) => target.x + 50,
         repeat: -1,
         yoyo: true
     })
 
+<<<<<<< HEAD
     this.player = this.physics.add.sprite(200, 350 , "atomo");
 
     this.input.keyboard.on("keydown_D" , () => {
@@ -83,12 +85,11 @@ function create() {
     this.input.keyboard.on("keydown_A" , () => {
         this.atomo.x--;
     })
+=======
+   
+>>>>>>> 5fa4f43c193add9f56b84280faad4dd3b4a9c89c
 }
 
 function update(time, delta) {
-    if(this.right.isDown){
-        this.atomo.x++;
-    } else if ( this.left.isDown){
-        this.atomo.x--;
-    }
+    
 }
