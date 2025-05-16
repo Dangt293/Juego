@@ -7,7 +7,10 @@ const config = {
     scene: {
         preload: preload,
         create: create,
-        update: update
+        update: update,
+        extends: {
+            colisionNeutron: colisionNeutron
+        }
     },
     physics: {
         default: "arcade",
@@ -20,6 +23,29 @@ const config = {
 }
 
 var game = new Phaser.Game(config);
+
+function colisionNeutron(enemy, shot) {
+    console.log("Colisión detectada");
+    shot.destroy();
+    enemy.destroy();
+
+    //Crea el sprite de la explosión
+     this.anims.create({
+        key: "explote",
+        frames: this.anims.generateFrameNumbers("explosion", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }),
+        frameRate: 9
+    });
+    this.explosion = this.add.sprite("explosion");
+    this.explosion.play("explote", true);
+    
+    const boom = this.add.sprite(enemy.x, enemy.y, "explosion");
+    boom.anims.play("explote", true);
+    boom.on('animationcomplete', () => {
+        boom.destroy();
+    });
+}
+
+
 
 function preload() {
     //Carga el sprite del átomo
@@ -35,7 +61,13 @@ function preload() {
     });
 
     //Carga el sprite del neutron (disparo)
-    this.load.image("Neutron" , "assets/Neutron_Nuevo.png");
+    this.load.image("Neutron", "assets/Neutron_Nuevo.png");
+
+    //Carga el sprite de explosión
+    this.load.spritesheet("explosion", "assets/Explosion.png", {
+        frameWidth: 96,
+        frameHeight: 96
+    });
 }
 
 function create() {
@@ -53,7 +85,7 @@ function create() {
     this.player.setCollideWorldBounds(true);
     this.shots = this.physics.add.group();
     this.canShoot = true;
-    this.shootCooldown = 175 ;
+    this.shootCooldown = 175;
 
     //Refiere al sprite de la partícula radioactiva
     this.anims.create({
@@ -71,23 +103,30 @@ function create() {
             y: 300,
             stepX: 97
         }
-        
+
     });
     grupo.playAnimation("rotate")
 
-    this.tweens.add({
-        targets: grupo.getChildren(),
-        duration: 1000,
-        x: (target) => target.x + 25,
-        repeat: -1,
-        yoyo: true
-    });
-
     grupo.children.iterate((enemy) => {
-    enemy.setCollideWorldBounds(true);
-    enemy.setBounce(1);
+        enemy.setCollideWorldBounds(true);
+        enemy.setBounce(1);
+
+        this.tweens.add({
+            targets: enemy,
+            duration: 1000,
+            x: enemy.x + 25,
+            repeat: -1,
+            yoyo: true
+        });
     });
 
+
+    //Refiere al sprite de explosión
+   
+
+    this.physics.add.overlap(grupo, this.shots, colisionNeutron, null, this);
+
+    //Disparo
     this.cursors = this.input.keyboard.addKeys({
         left: Phaser.Input.Keyboard.KeyCodes.A,
         right: Phaser.Input.Keyboard.KeyCodes.D
@@ -104,17 +143,18 @@ function update(time, delta) {
     };
 
     //PARA DISPARAR
-    if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.canShoot ) {
-    let shot = this.shots.create(this.player.x , this.player.y, "Neutron");
-    shot.setVelocityY(-600); // velocidad hacia la derecha
-    shot.setCollideWorldBounds(false);
-    shot.body.allowGravity = false;
+    if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.canShoot) {
+        let shot = this.shots.create(this.player.x, this.player.y, "Neutron");
+        shot.setVelocityY(-600); // velocidad hacia la derecha
+        shot.setCollideWorldBounds(false);
+        shot.body.allowGravity = false;
 
-    this.canShoot = false
+        this.canShoot = false
 
-    this.time.delayedCall(this.shootCooldown, () => {
-        this.canShoot = true;
-    });
+        this.time.delayedCall(this.shootCooldown, () => {
+            this.canShoot = true;
+        });
 
     }
 }
+
