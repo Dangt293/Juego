@@ -35,9 +35,6 @@ function colisionNeutron(enemy, shot) {
         frames: this.anims.generateFrameNumbers("explosion", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }),
         frameRate: 9
     });
-    this.explosion = this.add.sprite("explosion");
-    this.explosion.play("explote", true);
-    
     const boom = this.add.sprite(enemy.x, enemy.y, "explosion");
     boom.anims.play("explote", true);
     boom.on('animationcomplete', () => {
@@ -115,8 +112,11 @@ function create() {
             targets: enemy,
             duration: 1000,
             x: enemy.x + 25,
-            repeat: -1,
-            yoyo: true
+            repeat: -1, 
+            yoyo: true,
+            onRepeat: () => {
+            enemy.y += 30; // cada vez que cambia de dirección, baja un poco
+        }
         });
     });
 
