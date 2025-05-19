@@ -30,7 +30,7 @@ function colisionNeutron(enemy, shot) {
     enemy.destroy();
 
     //Crea el sprite de la explosión
-     this.anims.create({
+    this.anims.create({
         key: "explote",
         frames: this.anims.generateFrameNumbers("explosion", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }),
         frameRate: 9
@@ -42,6 +42,23 @@ function colisionNeutron(enemy, shot) {
     });
 }
 
+function colisionJugador(enemy) {
+    console.log("Jugador golpeado");
+    this.player.destroy();
+    enemy.destroy();
+
+    //Crea el sprite de la explosión
+    this.anims.create({
+        key: "gameOver",
+        frames: this.anims.generateFrameNumbers("gameOver", { starts: 0, ends: 20 }),
+        frameRate: 9
+    });
+    const end = this.add.sprite(this.player.x, this.player.y, "gameOver");
+    end.anims.play("gameOver", true);
+    end.on('animationcomplete', () => {
+        end.destroy();
+    });
+}
 
 
 function preload() {
@@ -62,6 +79,12 @@ function preload() {
 
     //Carga el sprite de explosión
     this.load.spritesheet("explosion", "assets/Explosion.png", {
+        frameWidth: 96,
+        frameHeight: 96
+    });
+
+    //Carga el sprite del átomo golpeado
+    this.load.spritesheet("gameOver", "assets/atomoExplosion.png", {
         frameWidth: 96,
         frameHeight: 96
     });
@@ -92,7 +115,7 @@ function create() {
         repeat: -1
     });
 
-    let grupo = this.physics.add.group({
+    this.enemigos = this.physics.add.group({
         key: 'RadioactivePart',
         repeat: 9,
         setXY: {
@@ -102,9 +125,9 @@ function create() {
         }
 
     });
-    grupo.playAnimation("rotate")
+    this.enemigos.playAnimation("rotate")
 
-    grupo.children.iterate((enemy) => {
+    this.enemigos.children.iterate((enemy) => {
         enemy.setCollideWorldBounds(true);
         enemy.setBounce(1);
 
@@ -112,19 +135,17 @@ function create() {
             targets: enemy,
             duration: 1000,
             x: enemy.x + 25,
-            repeat: -1, 
+            repeat: -1,
             yoyo: true,
-            onRepeat: () => {
-            enemy.y += 30; // cada vez que cambia de dirección, baja un poco
-        }
+            onYoyo: () => {
+                enemy.y += 30;
+            }
         });
     });
 
 
-    //Refiere al sprite de explosión
-   
-
-    this.physics.add.overlap(grupo, this.shots, colisionNeutron, null, this);
+    this.physics.add.overlap(this.enemigos, this.shots, colisionNeutron, null, this);
+    this.physics.add.overlap(this.enemigos, this.player, colisionJugador, null, this);
 
     //Disparo
     this.cursors = this.input.keyboard.addKeys({
@@ -133,6 +154,25 @@ function create() {
     });
 
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    //CREA OLEADAS (ACTUALMENTE FALLA YA QUE CREA MUCHAS OLEADAS DE SEGUIDO Y NO TIENEN MOVIMIENTO)
+    this.oleadaActual = 1;
+    this.crearOleada = () => {
+        console.log("Creando oleada: " +this.oleadaActual);
+        var cont = 50;
+
+        for (let i = 0; i < 9; i++) {
+            let enemigo = this.physics.add.sprite(cont, 0, "RadioactivePart"); 
+            enemigo.play("rotate");
+            enemigo.setVelocityX(this.velocidadX);
+            enemigo.setCollideWorldBounds(false);
+            enemigo.body.immovable = true;
+
+            this.enemigos.add(enemigo); 
+            cont = cont + 97;
+        }
+
+        this.oleadaActual++;
+    }
 }
 
 function update(time, delta) {
@@ -156,5 +196,12 @@ function update(time, delta) {
         });
 
     }
+
+    if (this.enemigos.countActive(true) === 0) {
+        this.time.delayedCall(1000, () => {
+            this.crearOleada();
+        });
+    }
 }
+
 
