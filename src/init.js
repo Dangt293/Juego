@@ -27,7 +27,7 @@ var game = new Phaser.Game(config);
 function colisionNeutron(enemy, shot) {
     console.log("Colisión detectada");
     shot.destroy();
-    enemy.destroy();
+      
 
     //Crea el sprite de la explosión
     this.anims.create({
@@ -35,11 +35,19 @@ function colisionNeutron(enemy, shot) {
         frames: this.anims.generateFrameNumbers("explosion", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }),
         frameRate: 9
     });
+
+    this.explosion = this.add.sprite("explosion");
+    this.explosion.play("explote", true);
     const boom = this.add.sprite(enemy.x, enemy.y, "explosion");
     boom.anims.play("explote", true);
     boom.on('animationcomplete', () => {
         boom.destroy();
     });
+    enemy.destroy();
+
+    this.score += 500;
+    this.scoreText.setText(`Points: ${this.score}`);
+    
 }
 
 function colisionJugador(enemy) {
@@ -83,6 +91,7 @@ function preload() {
         frameHeight: 96
     });
 
+
     //Carga el sprite del átomo golpeado
     this.load.spritesheet("gameOver", "assets/atomoExplosion.png", {
         frameWidth: 96,
@@ -90,7 +99,11 @@ function preload() {
     });
 }
 
+
+
+
 function create() {
+    
 
     //Refiere al sprite del átomo
     this.anims.create({
@@ -154,6 +167,7 @@ function create() {
     });
 
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
     //CREA OLEADAS (ACTUALMENTE FALLA YA QUE CREA MUCHAS OLEADAS DE SEGUIDO Y NO TIENEN MOVIMIENTO)
     this.oleadaActual = 1;
     this.crearOleada = () => {
@@ -173,6 +187,12 @@ function create() {
 
         this.oleadaActual++;
     }
+
+    this.score = 0;
+    this.scoreText = this.add.text(5, 5, "Points: 0", {
+        font: "18px Arcade Classic",
+        fill: "#FFFFFF"
+    });
 }
 
 function update(time, delta) {
