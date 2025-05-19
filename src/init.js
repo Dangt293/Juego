@@ -27,7 +27,7 @@ var game = new Phaser.Game(config);
 function colisionNeutron(enemy, shot) {
     console.log("Colisión detectada");
     shot.destroy();
-    enemy.destroy();
+      
 
     //Crea el sprite de la explosión
      this.anims.create({
@@ -35,14 +35,19 @@ function colisionNeutron(enemy, shot) {
         frames: this.anims.generateFrameNumbers("explosion", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }),
         frameRate: 9
     });
-    this.explosion = this.add.sprite("explosion");
-    this.explosion.play("explote", true);
+    //this.explosion = this.add.sprite("explosion");
+    //this.explosion.play("explote", true);
     
     const boom = this.add.sprite(enemy.x, enemy.y, "explosion");
     boom.anims.play("explote", true);
     boom.on('animationcomplete', () => {
         boom.destroy();
     });
+    enemy.destroy();
+
+    this.score += 500;
+    this.scoreText.setText(`Points: ${this.score}`);
+    
 }
 
 
@@ -68,9 +73,14 @@ function preload() {
         frameWidth: 96,
         frameHeight: 96
     });
+
 }
 
+
+
+
 function create() {
+    
 
     //Refiere al sprite del átomo
     this.anims.create({
@@ -116,7 +126,10 @@ function create() {
             duration: 1000,
             x: enemy.x + 25,
             repeat: -1,
-            yoyo: true
+            yoyo: true,
+            onYoyo: () => {
+            enemy.y += 30; // cada vez que cambia de dirección, baja un poco
+        }
         });
     });
 
@@ -133,6 +146,12 @@ function create() {
     });
 
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    this.score = 0;
+    this.scoreText = this.add.text(5, 5, "Points: 0", {
+        font: "18px Arcade Classic",
+        fill: "#FFFFFF"
+    });
 }
 
 function update(time, delta) {
