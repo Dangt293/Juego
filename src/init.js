@@ -2,16 +2,9 @@ const config = {
     width: 1000,
     height: 700,
     parent: "container",
-    type: Phaser.AUTO,
-    scene: {
-        preload: preload,
-        create: create,
-        update: update,
-        extends: {
-            colisionNeutron: colisionNeutron
-        }
-    },
-    physics: {
+    type: Phaser.CANVAS,
+    scene: [Escena1, Escena2, Escena3, Escena4 ],
+        physics: {
         default: "arcade",
         arcade: {
             gravity: {
@@ -22,7 +15,7 @@ const config = {
 }
 
 var game = new Phaser.Game(config);
-
+/*
 function colisionNeutron(enemy, shot) {
     console.log("Colisión detectada");
     shot.destroy();
@@ -252,5 +245,5 @@ function update(time, delta) {
         });
     }
 }
-
+*/
 
