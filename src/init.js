@@ -170,46 +170,48 @@ function create() {
 
     //CREA OLEADAS 
     this.oleadaActual = 1;
-   this.crearOleada = () => {
-    console.log("Creando oleada: " + this.oleadaActual);
-    let filas;
-    if (this.oleadaActual < 5) {
-        filas = this.oleadaActual + 1;
-    }else {
-        filas = 5;
-    }
-    const columnas = 10;
-    const margenX = 50;
-    const margenY = 50;
-    const espaciadoX = 97;
-    const espaciadoY = 80;
-
-    for (let fila = 0; fila < filas; fila++) {
-        for (let col = 0; col < columnas; col++) {
-            const x = margenX + col * espaciadoX;
-            const y = margenY + fila * espaciadoY;
-
-            let enemigo = this.physics.add.sprite(x, y, "RadioactivePart");
-            enemigo.play("rotate");
-            enemigo.setCollideWorldBounds(true);
-
-            this.enemigos.add(enemigo);
-
-            this.tweens.add({
-                targets: enemigo,
-                duration: 1000,
-                x: x + 25,
-                repeat: -1,
-                yoyo: true,
-                onYoyo: () => {
-                    enemigo.y += 30;
-                }
-            });
+    this.crearOleada = () => {
+        console.log("Creando oleada: " + this.oleadaActual);
+        let filas;
+        let velocidad = 1000;
+        if (this.oleadaActual < 5) {
+            filas = this.oleadaActual + 1;
+        } else {
+            velocidad = Math.max(300, 1000 - (this.oleadaActual - 3) * 100)
+            filas = 5;
         }
-    }
+        const columnas = 10;
+        const margenX = 50;
+        const margenY = 50;
+        const espaciadoX = 97;
+        const espaciadoY = 80;
 
-    this.oleadaActual++;
-};
+        for (let fila = 0; fila < filas; fila++) {
+            for (let col = 0; col < columnas; col++) {
+                const x = margenX + col * espaciadoX;
+                const y = margenY + fila * espaciadoY;
+
+                let enemigo = this.physics.add.sprite(x, y, "RadioactivePart");
+                enemigo.play("rotate");
+                enemigo.setCollideWorldBounds(true);
+
+                this.enemigos.add(enemigo);
+
+                this.tweens.add({
+                    targets: enemigo,
+                    duration: velocidad,
+                    x: x + 25,
+                    repeat: -1,
+                    yoyo: true,
+                    onYoyo: () => {
+                        enemigo.y += 30;
+                    }
+                });
+            }
+        }
+        console.log(velocidad);
+        this.oleadaActual++;
+    };
 
     //PUNTUACION
     this.score = 0;
