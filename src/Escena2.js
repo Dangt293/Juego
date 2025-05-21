@@ -30,9 +30,9 @@ class Escena2 extends Phaser.Scene {
     }
 
     create() {
-
         this.add.image(0, 0, "Nuclear").setOrigin(0, 0);
 
+        //Particula átomo
         this.anims.create({
             key: "move",
             frames: this.anims.generateFrameNumbers("atomo", { start: 0, end: 18 }),
@@ -61,7 +61,7 @@ class Escena2 extends Phaser.Scene {
             repeat: 9,
             setXY: {
                 x: 50,
-                y: 300,
+                y: 10,
                 stepX: 97
             }
 
@@ -79,7 +79,11 @@ class Escena2 extends Phaser.Scene {
                 repeat: -1,
                 yoyo: true,
                 onYoyo: () => {
+                    console.log("Altura: " + enemy.y)
                     enemy.y += 30;
+                    if (enemy.y >= 600) {
+                        this.scene.start('Scene3');
+                    }
                 }
             });
         });
@@ -167,6 +171,7 @@ class Escena2 extends Phaser.Scene {
             });
         }
 
+        //PARA LAS OLEADAS
         if (this.enemigos.countActive(true) === 0 && !this.oleadaEnCurso) {
             this.oleadaEnCurso = true;
 

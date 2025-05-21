@@ -4,12 +4,35 @@ class Escena1 extends Phaser.Scene {
     }
 
     preload() {
-        
-        
+        this.load.spritesheet("atomo", "assets/AtomoJuego19.png", {
+            frameWidth: 96,
+            frameHeight: 96
+        });
+
+        this.load.image("Nuclear", "assets/NuclearRapida.png");
+
+        this.load.spritesheet("RadioactivePart", "assets/Radioactive.png", {
+            frameWidth: 96,
+            frameHeight: 96
+        });
     }
 
     create() {
-        
+        this.anims.create({
+            key: "move",
+            frames: this.anims.generateFrameNumbers("atomo", { start: 0, end: 18 }),
+            frameRate: 19,
+            repeat: -1
+        });
+
+        this.player = this.physics.add.sprite(400, 650, "atomo");
+        this.player.play("move", true);
+        this.player.setCollideWorldBounds(true);
+
+        this.shots = this.physics.add.group();
+        this.canShoot = true;
+        this.shootCooldown = 175;
+
         this.add.text(400, 100, 'Neutron Strike', {
             fontSize: '48px',
             color: '#ffffff'
