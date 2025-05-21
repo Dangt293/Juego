@@ -3,8 +3,21 @@ const config = {
     width: 1000,
     height: 700,
     parent: "container",
-    type: Phaser.AUTO,
-    scene: {
+    type: Phaser.CANVAS,
+    scene: [Escena1, Escena2, Escena3, Escena4 ],
+        physics: {
+        default: "arcade",
+        arcade: {
+            gravity: {
+
+            }
+        }
+    }
+
+
+}
+        /*
+    {
         preload: preload,
         create: create,
         update: update,
@@ -20,8 +33,10 @@ const config = {
             }
         }
     }
-}
+        */
 
+
+/*
 var game = new Phaser.Game(config);
 
 function colisionNeutron(enemy, shot) {
@@ -66,6 +81,7 @@ function colisionJugador(enemy) {
     end.on('animationcomplete', () => {
         end.destroy();
     });
+
 }
 
 
@@ -224,4 +240,6 @@ function update(time, delta) {
     }
 }
 
+*/
 
+new Phaser.Game(config)
