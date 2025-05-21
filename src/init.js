@@ -1,4 +1,3 @@
-
 const config = {
     width: 1000,
     height: 700,
@@ -42,7 +41,7 @@ var game = new Phaser.Game(config);
 function colisionNeutron(enemy, shot) {
     console.log("Colisión detectada");
     shot.destroy();
-      
+
 
     //Crea el sprite de la explosión
     this.anims.create({
@@ -62,7 +61,7 @@ function colisionNeutron(enemy, shot) {
 
     this.score += 500;
     this.scoreText.setText(`Points: ${this.score}`);
-    
+
 }
 
 function colisionJugador(enemy) {
@@ -119,7 +118,8 @@ function preload() {
 
 
 function create() {
-    
+
+    this.oleadaEnCurso = false;
 
     //Refiere al sprite del átomo
     this.anims.create({
@@ -184,26 +184,50 @@ function create() {
 
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    //CREA OLEADAS (ACTUALMENTE FALLA YA QUE CREA MUCHAS OLEADAS DE SEGUIDO Y NO TIENEN MOVIMIENTO)
+    //CREA OLEADAS 
     this.oleadaActual = 1;
-    this.crearOleada = () => {
-        console.log("Creando oleada: " +this.oleadaActual);
-        var cont = 50;
+   this.crearOleada = () => {
+    console.log("Creando oleada: " + this.oleadaActual);
+    let filas;
+    if (this.oleadaActual < 5) {
+        filas = this.oleadaActual + 1;
+    }else {
+        filas = 5;
+    }
+    const columnas = 10;
+    const margenX = 50;
+    const margenY = 50;
+    const espaciadoX = 97;
+    const espaciadoY = 80;
 
-        for (let i = 0; i < 9; i++) {
-            let enemigo = this.physics.add.sprite(cont, 0, "RadioactivePart"); 
+    for (let fila = 0; fila < filas; fila++) {
+        for (let col = 0; col < columnas; col++) {
+            const x = margenX + col * espaciadoX;
+            const y = margenY + fila * espaciadoY;
+
+            let enemigo = this.physics.add.sprite(x, y, "RadioactivePart");
             enemigo.play("rotate");
-            enemigo.setVelocityX(this.velocidadX);
-            enemigo.setCollideWorldBounds(false);
-            enemigo.body.immovable = true;
+            enemigo.setCollideWorldBounds(true);
 
-            this.enemigos.add(enemigo); 
-            cont = cont + 97;
+            this.enemigos.add(enemigo);
+
+            this.tweens.add({
+                targets: enemigo,
+                duration: 1000,
+                x: x + 25,
+                repeat: -1,
+                yoyo: true,
+                onYoyo: () => {
+                    enemigo.y += 30;
+                }
+            });
         }
-
-        this.oleadaActual++;
     }
 
+    this.oleadaActual++;
+};
+
+    //PUNTUACION
     this.score = 0;
     this.scoreText = this.add.text(5, 5, "Points: 0", {
         font: "18px Arcade Classic",
@@ -233,9 +257,12 @@ function update(time, delta) {
 
     }
 
-    if (this.enemigos.countActive(true) === 0) {
+    if (this.enemigos.countActive(true) === 0 && !this.oleadaEnCurso) {
+        this.oleadaEnCurso = true;
+
         this.time.delayedCall(1000, () => {
             this.crearOleada();
+            this.oleadaEnCurso = false;
         });
     }
 }
