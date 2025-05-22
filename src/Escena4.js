@@ -28,4 +28,4 @@ class Escena4 extends Phaser.Scene{
         
     }
 
-}s
+}
