@@ -104,7 +104,7 @@ class Escena2 extends Phaser.Scene {
             console.log("Creando oleada: " + this.oleadaActual);
             let filas;
             let velocidad = 1000;
-            if (this.oleadaActual < 4) {
+            if (this.oleadaActual < 5) {
                 filas = this.oleadaActual + 1;
             } else {
                 velocidad = Math.max(300, 1000 - (this.oleadaActual - 3) * 100)
@@ -203,7 +203,7 @@ class Escena2 extends Phaser.Scene {
         this.score += 500;
         this.scoreText.setText(`Points: ${this.score}`);
 
-        if (this.score >= 50000) {
+        if (this.score >= 20000) {
             this.scene.start('Scene4');
         }
         if (this.enemigos.countActive(true) === 0 && !this.oleadaEnCurso) {
